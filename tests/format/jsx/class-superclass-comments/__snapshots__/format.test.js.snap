@@ -1,5 +1,162 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
+exports[`ignored-trailing-comment.jsx - {"printWidth":20} format 1`] = `
+====================================options=====================================
+parsers: ["babel", "flow", "typescript"]
+printWidth: 20
+    printWidth: 20 |
+=====================================input======================================
+class A extends (/* prettier-ignore */ <Tag  raw = "value" /> // trailing
+) {}
+
+class Fragment extends (/* prettier-ignore */ <>{/* inside */}<Tag  raw = "value" /></> // fragment
+) {}
+
+let Expression = class extends (/* prettier-ignore */ <Tag  raw = "value" /> // expression
+) {};
+
+Expression = class extends (/* prettier-ignore */ <Tag  raw = "value" /> // assignment
+) {
+  method() {}
+};
+
+class LeadingLine extends (
+  // prettier-ignore
+  <Tag  raw = "value" />
+) {}
+
+class InternalComments extends (/* prettier-ignore */ <Tag  raw = {/* inside */ value} />) {}
+
+class Mixed extends (/* before */ /* prettier-ignore */ <Tag  raw = "value" /> /* after */) {}
+
+const IgnoredFragment = class extends (/* prettier-ignore */ <>  raw text  </> /* after */) {};
+
+=====================================output=====================================
+class A
+  extends (
+    /* prettier-ignore */ <Tag  raw = "value" /> // trailing
+  ) {}
+
+class Fragment
+  extends (
+    /* prettier-ignore */ <>{/* inside */}<Tag  raw = "value" /></> // fragment
+  ) {}
+
+let Expression = class
+  extends (
+    /* prettier-ignore */ <Tag  raw = "value" /> // expression
+  ) {};
+
+Expression = class
+  extends (
+    (
+      /* prettier-ignore */ <Tag  raw = "value" /> // assignment
+    )
+  )
+{
+  method() {}
+};
+
+class LeadingLine
+  extends (
+    // prettier-ignore
+    <Tag  raw = "value" />
+  ) {}
+
+class InternalComments
+  extends (
+    /* prettier-ignore */ <Tag  raw = {/* inside */ value} />
+  ) {}
+
+class Mixed
+  extends (
+    /* before */ /* prettier-ignore */ <Tag  raw = "value" /> /* after */
+  ) {}
+
+const IgnoredFragment = class
+  extends (
+    /* prettier-ignore */ <>  raw text  </> /* after */
+  ) {};
+
+================================================================================
+`;
+
+exports[`ignored-trailing-comment.jsx format 1`] = `
+====================================options=====================================
+parsers: ["babel", "flow", "typescript"]
+                                                      printWidth: 80 (default) |
+=====================================input======================================
+class A extends (/* prettier-ignore */ <Tag  raw = "value" /> // trailing
+) {}
+
+class Fragment extends (/* prettier-ignore */ <>{/* inside */}<Tag  raw = "value" /></> // fragment
+) {}
+
+let Expression = class extends (/* prettier-ignore */ <Tag  raw = "value" /> // expression
+) {};
+
+Expression = class extends (/* prettier-ignore */ <Tag  raw = "value" /> // assignment
+) {
+  method() {}
+};
+
+class LeadingLine extends (
+  // prettier-ignore
+  <Tag  raw = "value" />
+) {}
+
+class InternalComments extends (/* prettier-ignore */ <Tag  raw = {/* inside */ value} />) {}
+
+class Mixed extends (/* before */ /* prettier-ignore */ <Tag  raw = "value" /> /* after */) {}
+
+const IgnoredFragment = class extends (/* prettier-ignore */ <>  raw text  </> /* after */) {};
+
+=====================================output=====================================
+class A
+  extends (
+    /* prettier-ignore */ <Tag  raw = "value" /> // trailing
+  ) {}
+
+class Fragment
+  extends (
+    /* prettier-ignore */ <>{/* inside */}<Tag  raw = "value" /></> // fragment
+  ) {}
+
+let Expression = class
+  extends (
+    /* prettier-ignore */ <Tag  raw = "value" /> // expression
+  ) {};
+
+Expression = class
+  extends (
+    (
+      /* prettier-ignore */ <Tag  raw = "value" /> // assignment
+    )
+  )
+{
+  method() {}
+};
+
+class LeadingLine
+  extends (
+    // prettier-ignore
+    <Tag  raw = "value" />
+  ) {}
+
+class InternalComments
+  extends (/* prettier-ignore */ <Tag  raw = {/* inside */ value} />) {}
+
+class Mixed
+  extends (
+    /* before */ /* prettier-ignore */ <Tag  raw = "value" /> /* after */
+  ) {}
+
+const IgnoredFragment = class
+  extends (/* prettier-ignore */ <>  raw text  </> /* after */) {};
+
+================================================================================
+`;
+
 exports[`superclass.jsx - {"printWidth":20} format 1`] = `
 ====================================options=====================================
 parsers: ["babel", "flow", "typescript"]
@@ -101,7 +258,9 @@ class Ordinary
   extends /* ordinary */ createClass() {}
 
 class Ignored
-  extends /* prettier-ignore */ (<Component  unformatted = "value" />) {}
+  extends (
+    /* prettier-ignore */ <Component  unformatted = "value" />
+  ) {}
 
 Expression = class
   extends (
@@ -195,7 +354,7 @@ class Nested
 class Ordinary extends /* ordinary */ createClass() {}
 
 class Ignored
-  extends /* prettier-ignore */ (<Component  unformatted = "value" />) {}
+  extends (/* prettier-ignore */ <Component  unformatted = "value" />) {}
 
 Expression = class
   extends (

@@ -19,7 +19,6 @@ import needsParentheses from "../parentheses/needs-parentheses.js";
 import { isNonEmptyClassBody } from "../utilities/class-members.js";
 import { CommentCheckFlags, hasComment } from "../utilities/comments.js";
 import { createTypeCheckFunction } from "../utilities/create-type-check-function.js";
-import { hasNodeIgnoreComment } from "../utilities/has-node-ignore-comment.js";
 import { isJsxElement, isMemberExpression } from "../utilities/node-types.js";
 import { stripChainElementWrappers } from "../utilities/strip-chain-element-wrappers.js";
 import { printAssignment } from "./assignment.js";
@@ -119,8 +118,8 @@ function printClassWithoutDecorators(path, options, print) {
     const printedWithComments = path.call(
       () => [
         "extends ",
-        // JSX prints its own comments inside its parentheses unless ignored.
-        isJsxElement(node.superClass) && !hasNodeIgnoreComment(node.superClass)
+        // JSX prints its own comments inside its parentheses.
+        isJsxElement(node.superClass)
           ? printed
           : printComments(path, printed, options),
       ],

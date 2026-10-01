@@ -147,6 +147,7 @@ function handleRemainingComment(context) {
     handleCommentInEmptyParens,
     handleIgnoreComments,
     handleClosureTypeCastComments,
+    handleJsxSuperClassComments,
     handleIfStatementComments,
     handleWhileLikeComments,
     handleSwitchStatementComments,
@@ -329,7 +330,8 @@ function handleJsxSuperClassComments({
     (enclosingNode?.type !== "ClassDeclaration" &&
       enclosingNode?.type !== "ClassExpression") ||
     !isJsxElement(enclosingNode.superClass) ||
-    isPrettierIgnoreComment(comment)
+    (isPrettierIgnoreComment(comment) &&
+      followingNode !== enclosingNode.superClass)
   ) {
     return false;
   }

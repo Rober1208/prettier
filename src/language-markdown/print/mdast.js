@@ -187,7 +187,7 @@ function printMdast(path, options, print) {
             "](",
             options.parser !== "mdx" && node.url === ""
               ? "<>"
-              : printUrl(node.url, false),
+              : printUrl(node.url, isUrlWrappedInAngleBrackets(node, options)),
             printTitle(node.title, options),
             ")",
           ];
@@ -204,7 +204,7 @@ function printMdast(path, options, print) {
         "](",
         options.parser !== "mdx" && node.url === ""
           ? "<>"
-          : printUrl(node.url, false),
+          : printUrl(node.url, isUrlWrappedInAngleBrackets(node, options)),
         printTitle(node.title, options),
         ")",
       ];
@@ -282,7 +282,7 @@ function printMdast(path, options, print) {
           lineOrSpace,
           options.parser !== "mdx" && node.url === ""
             ? "<>"
-            : printUrl(node.url, true),
+            : printUrl(node.url),
           node.title === null
             ? ""
             : [lineOrSpace, printTitle(node.title, options, false)],
@@ -458,10 +458,10 @@ const escapeCharacterReferences = (value) =>
 
 /**
  * @param {string} url
- * @param {boolean} unwrapBalancedParens
+ * @param {boolean} [keepAngleBrackets] Wrap in `<>` even if it's not required
  * @returns {string}
  */
-function printUrl(url, unwrapBalancedParens) {
+function printUrl(url, keepAngleBrackets = false) {
   // Backslash followed by ASCII punctuation would be misinterpreted as an
   // escape sequence, so must itself be escaped.
   url = url.replaceAll(/\\(?![^!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~])/g, "\\\\");
@@ -473,16 +473,80 @@ function printUrl(url, unwrapBalancedParens) {
   // parenthesis nesting, so it's unclear whether we can safely rely on three
   // levels as we do here, but we certainly can't expect more.
   if (
+    keepAngleBrackets ||
     // eslint-disable-next-line no-control-regex
     /[\x00-\x1f\x7f ]|^</.test(url) ||
-    (unwrapBalancedParens
-      ? !/^(?:[^()]|\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\))*$/.test(url)
-      : /[()]/.test(url))
+    !hasBalancedParentheses(url, 3)
   ) {
     url = `<${url.replaceAll(/([<>])/g, String.raw`\$1`)}>`;
   }
 
   return url;
+}
+
+/**
+ * Check that parentheses are balanced and nested at most `maxDepth` levels.
+ * This is a loop rather than a regular expression, which overflows the stack
+ * on very long URLs such as `data:` URIs.
+ *
+ * @param {string} text
+ * @param {number} maxDepth
+ * @returns {boolean}
+ */
+function hasBalancedParentheses(text, maxDepth) {
+  let depth = 0;
+
+  for (const character of text) {
+    if (character === "(") {
+      depth++;
+      if (depth > maxDepth) {
+        return false;
+      }
+    } else if (character === ")") {
+      depth--;
+      if (depth < 0) {
+        return false;
+      }
+    }
+  }
+
+  return depth === 0;
+}
+
+/**
+ * Check if the destination of an inline link or image is written as `<url>`
+ * in the original text.
+ */
+function isUrlWrappedInAngleBrackets(node, options) {
+  const { originalText } = options;
+  const end = locEnd(node);
+  let depth = 0;
+
+  for (
+    let index = originalText.indexOf("[", locStart(node));
+    index < end;
+    index++
+  ) {
+    switch (originalText[index]) {
+      case "\\":
+        index++;
+        break;
+      case "[":
+        depth++;
+        break;
+      case "]":
+        depth--;
+        if (depth === 0) {
+          // The label is followed by `(`, optional spaces, tabs or a line
+          // ending, then the destination. A destination without `<>` can't
+          // start with `<`.
+          return /^\([\t\n\r ]*</.test(originalText.slice(index + 1, end));
+        }
+        break;
+    }
+  }
+
+  return false;
 }
 
 function printTitle(title, options, printSpace = true) {

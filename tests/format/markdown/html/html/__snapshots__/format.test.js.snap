@@ -209,11 +209,11 @@ https://spec.commonmark.org/dingus/?text=%3Cspan%3E...%20%5Bdimensions%5D(%3Chtt
 
 -->
 
-<span>... [dimensions](https://en.wikipedia.org/wiki/Dimension) ... </span>
+<span>... [dimensions](<https://en.wikipedia.org/wiki/Dimension>) ... </span>
 
 <div>... [dimensions](<https://en.wikipedia.org/wiki/Dimension>) ... </div>
 
-<no-a-html-tag>... [dimensions](https://en.wikipedia.org/wiki/Dimension) ... </no-a-html-tag>
+<no-a-html-tag>... [dimensions](<https://en.wikipedia.org/wiki/Dimension>) ... </no-a-html-tag>
 
 ================================================================================
 `;
